@@ -73,7 +73,7 @@ router.get('/', function (req, res) {
 });
 
 /**
- * SHOW TAG
+ * SHOW DETAIL TAG
  */
  router.get('/:id', function (req, res) {
 
@@ -104,6 +104,52 @@ router.get('/', function (req, res) {
             })
         }
     })
+});
+
+/**
+ * UPDATE TAG
+ */
+ router.patch('/update/:id', [
+
+    //validation
+    body('tag').notEmpty(),
+    body('ket').notEmpty()
+
+], (req, res) => {
+
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        return res.status(422).json({
+            errors: errors.array()
+        });
+    }
+
+    //id post
+    let id = req.params.id;
+
+    //data post
+    let formData = {
+        tag: req.body.tag,
+        ket: req.body.ket
+    }
+
+    // update query
+    connection.query(`UPDATE doc_tag_tests SET ? WHERE id = ${id}`, formData, function (err, rows) {
+        //if(err) throw err
+        if (err) {
+            return res.status(500).json({
+                status: false,
+                message: 'Internal Server Error',
+            })
+        } else {
+            return res.status(200).json({
+                status: true,
+                message: 'Update Data Successfully!'
+            })
+        }
+    })
+
 });
 
 module.exports = router;
